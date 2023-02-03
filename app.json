@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "agent-android",
-    "slug": "agent-android",
+    "name": "agent-mobile",
+    "slug": "agent-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,9 +14,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -24,7 +22,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.anonymous.agentandroid"
     },
     "web": {
       "favicon": "./assets/favicon.png"
