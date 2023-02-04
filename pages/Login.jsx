@@ -21,19 +21,9 @@ const LoginPage = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  function checkServer() {
+  function postToServer(data) {
     axios
-      .get(SERVER_DOMAIN)
-      .then((response) => {
-        console.log('response::', response.data);
-      })
-      .catch((error) => {
-        console.log('error', error);
-      });
-  }
-  function postToServer() {
-    axios
-      .post(SERVER_DOMAIN + '/login', {username: email, password: password})
+      .post(SERVER_DOMAIN + '/login', data)
       .then((response) => {
         console.log(response.data);
         const decoded = jwt_decode(response.data.jwt);
@@ -51,7 +41,7 @@ const LoginPage = ({navigation}) => {
     const isAllValid = validateFields();
     if (!isAllValid) return;
 
-    postToServer();
+    postToServer({username: email, password: password});
 
     return;
 
