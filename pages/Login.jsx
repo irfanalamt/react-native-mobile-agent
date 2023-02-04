@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {useState} from 'react';
 import {
+  KeyboardAvoidingView,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -13,9 +14,10 @@ import {
 
 import {SERVER_DOMAIN} from '@env';
 import jwt_decode from 'jwt-decode';
+import {validateEmail} from '../helpers/myFunctions';
 
 const LoginPage = ({navigation}) => {
-  const [agentId, setAgentId] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -29,9 +31,9 @@ const LoginPage = ({navigation}) => {
         console.log('error', error);
       });
   }
-  function checkServerPost() {
+  function postToServer() {
     axios
-      .post(SERVER_DOMAIN + '/login', {username: 'user', password: 'password'})
+      .post(SERVER_DOMAIN + '/login', {username: email, password: password})
       .then((response) => {
         console.log(response.data);
         const decoded = jwt_decode(response.data.jwt);
@@ -39,23 +41,44 @@ const LoginPage = ({navigation}) => {
         console.log(decoded);
       })
       .catch((error) => {
-        console.log(error);
+        const errorMessage = error.response.data.error;
+        console.log(errorMessage);
+        setError(errorMessage);
       });
   }
 
   function handleLogin() {
-    console.log('agentID', agentId);
-    checkServer();
-    checkServerPost();
+    const isAllValid = validateFields();
+    if (!isAllValid) return;
+
+    postToServer();
+
+    return;
 
     navigation.navigate('Home');
 
-    if (agentId == 1234) {
+    if (email == 1234) {
       setError('Login failed. Please try again.');
       return;
     }
 
     setError('');
+  }
+
+  function validateFields() {
+    const isEmailValid = validateEmail(email);
+    if (!isEmailValid) {
+      setError('Email is not valid');
+      return false;
+    }
+
+    if (password.length < 4) {
+      setError('Password must be at least 4 characters');
+      return false;
+    }
+
+    setError('');
+    return true;
   }
 
   function handleRegister() {
@@ -65,38 +88,41 @@ const LoginPage = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar />
-      <View style={styles.middleContainer}>
-        <Text style={styles.nameHeading}>BCX mobile</Text>
-        <View style={styles.card}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.textInput}
-              value={agentId}
-              onChangeText={setAgentId}
-              placeholder='Agent ID'
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              secureTextEntry={true}
-              style={styles.textInput}
-              value={password}
-              onChangeText={setPassword}
-              placeholder='Password'
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <TouchableHighlight
-              activeOpacity={0.8}
-              underlayColor='#738ea8'
-              style={styles.loginButton}
-              onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>LOGIN</Text>
-            </TouchableHighlight>
+      <KeyboardAvoidingView>
+        <View style={styles.middleContainer}>
+          <Text style={styles.nameHeading}>BCX mobile</Text>
+
+          <View style={styles.card}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.textInput}
+                value={email}
+                onChangeText={setEmail}
+                placeholder='Email'
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                secureTextEntry={true}
+                style={styles.textInput}
+                value={password}
+                onChangeText={setPassword}
+                placeholder='Password'
+              />
+            </View>
+            <View style={styles.buttonContainer}>
+              <TouchableHighlight
+                activeOpacity={0.8}
+                underlayColor='#738ea8'
+                style={styles.loginButton}
+                onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>LOGIN</Text>
+              </TouchableHighlight>
+            </View>
           </View>
         </View>
-      </View>
-      {error && <Text style={styles.errorText}>{error}</Text>}
+        <Text style={styles.errorText}>{error}</Text>
+      </KeyboardAvoidingView>
       <View style={styles.bottomContainer}>
         <TouchableOpacity>
           <Text style={styles.forgotPasswordText}>FORGOT PASSWORD</Text>
@@ -177,7 +203,7 @@ const styles = StyleSheet.create({
     color: '#4D7C96',
     paddingHorizontal: 5,
   },
-  middleContainer: {marginTop: '50%'},
+  middleContainer: {marginTop: '35%'},
   card: {
     elevation: 2,
     backgroundColor: '#f3f7f9',
