@@ -3,7 +3,7 @@ import {SafeAreaView, Text} from 'react-native';
 const Home = ({navigation}) => {
   return (
     <SafeAreaView>
-      <Text>Home</Text>
+      <Text>Home </Text>
     </SafeAreaView>
   );
 };
